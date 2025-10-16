@@ -1,4 +1,5 @@
 using Backend.Domain.Entities;
+using Backend.Domain.Enums;
 using Backend.Domain.Interfaces;
 using Backend.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -52,7 +53,7 @@ public class UserRepository : Repository<User>, IUserRepository
     }
 
     public async Task<IEnumerable<User>> GetBySexoAsync(
-        string sexo, 
+        SexoUsuario sexo, 
         CancellationToken cancellationToken = default)
     {
         return await _dbSet

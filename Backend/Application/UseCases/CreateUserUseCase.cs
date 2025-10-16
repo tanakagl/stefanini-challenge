@@ -1,41 +1,31 @@
-using Backend.Domain.Entities;
+using Backend.Application.DTOs;
+using Backend.Application.Mappings;
 using Backend.Domain.Interfaces;
 
 namespace Backend.Application.UseCases;
 
-/// <summary>
-/// Use Case para criar um novo usuário
-/// Exemplo de como usar o Repository Pattern
-/// </summary>
-public class CreateUserUseCase
+public class CreateUserUseCase(IUserRepository userRepository)
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserRepository _userRepository = userRepository;
 
-    public CreateUserUseCase(IUserRepository userRepository)
+    public async Task<UserResponseDto> ExecuteAsync(UserCreateDto dto, CancellationToken cancellationToken = default)
     {
-        _userRepository = userRepository;
-    }
-
-    public async Task<User> ExecuteAsync(User user, CancellationToken cancellationToken = default)
-    {
-        // Validações de negócio
-        if (await _userRepository.EmailExistsAsync(user.Email, cancellationToken))
+        if (await _userRepository.EmailExistsAsync(dto.Email, cancellationToken))
         {
             throw new InvalidOperationException("Email já cadastrado.");
         }
 
-        if (await _userRepository.CpfExistsAsync(user.Cpf, cancellationToken))
+        if (await _userRepository.CpfExistsAsync(dto.Cpf, cancellationToken))
         {
             throw new InvalidOperationException("CPF já cadastrado.");
         }
 
-        // Adiciona o usuário
+        var user = dto.ToEntity();
         await _userRepository.AddAsync(user, cancellationToken);
         
-        // Salva no banco
         await _userRepository.SaveChangesAsync(cancellationToken);
 
-        return user;
+        return user.ToResponseDto();
     }
 }
 

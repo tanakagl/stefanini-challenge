@@ -1,23 +1,17 @@
-using Backend.Domain.Entities;
+using Backend.Application.DTOs;
+using Backend.Application.Mappings;
 using Backend.Domain.Interfaces;
 
 namespace Backend.Application.UseCases;
 
-/// <summary>
-/// Use Case para listar todos os usuários
-/// </summary>
-public class GetAllUsersUseCase
+public class GetAllUsersUseCase(IUserRepository userRepository)
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserRepository _userRepository = userRepository;
 
-    public GetAllUsersUseCase(IUserRepository userRepository)
+    public async Task<IEnumerable<UserResponseDto>> ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        _userRepository = userRepository;
-    }
-
-    public async Task<IEnumerable<User>> ExecuteAsync(CancellationToken cancellationToken = default)
-    {
-        return await _userRepository.GetAllAsync(cancellationToken);
+        var users = await _userRepository.GetAllAsync(cancellationToken);
+        return users.ToResponseDtoList();
     }
 }
 

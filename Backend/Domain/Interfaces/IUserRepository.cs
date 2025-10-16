@@ -1,4 +1,5 @@
 using Backend.Domain.Entities;
+using Backend.Domain.Enums;
 
 namespace Backend.Domain.Interfaces;
 
@@ -14,6 +15,6 @@ public interface IUserRepository : IRepository<User>
     Task<bool> EmailExistsAsync(string email, CancellationToken cancellationToken = default);
     Task<bool> CpfExistsAsync(string cpf, CancellationToken cancellationToken = default);
     Task<IEnumerable<User>> GetByNacionalidadeAsync(string nacionalidade, CancellationToken cancellationToken = default);
-    Task<IEnumerable<User>> GetBySexoAsync(string sexo, CancellationToken cancellationToken = default);
+    Task<IEnumerable<User>> GetBySexoAsync(SexoUsuario sexo, CancellationToken cancellationToken = default);
 }
 

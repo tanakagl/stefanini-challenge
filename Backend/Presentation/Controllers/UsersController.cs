@@ -1,5 +1,5 @@
+using Backend.Application.DTOs;
 using Backend.Application.UseCases;
-using Backend.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Presentation.Controllers;
@@ -18,7 +18,7 @@ public class UsersController(
     private readonly ILogger<UsersController> _logger = logger;
 
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<UserResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         try
@@ -34,7 +34,7 @@ public class UsersController(
     }
 
     [HttpGet("search")]
-    [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<UserResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByName([FromQuery] string nome, CancellationToken cancellationToken)
     {
         try
@@ -50,13 +50,13 @@ public class UsersController(
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(User), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] User user, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] UserCreateDto dto, CancellationToken cancellationToken)
     {
         try
         {
-            var createdUser = await _createUserUseCase.ExecuteAsync(user, cancellationToken);
+            var createdUser = await _createUserUseCase.ExecuteAsync(dto, cancellationToken);
             return CreatedAtAction(nameof(GetAll), new { id = createdUser.Id }, createdUser);
         }
         catch (InvalidOperationException ex)

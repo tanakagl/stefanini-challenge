@@ -1,14 +1,15 @@
 using Backend.Domain.Enums;
 
-namespace Backend.Domain.Entities;
+namespace Backend.Application.DTOs;
 
-public class User : BaseEntity
+public class UserUpdateDto
 {
-    public required string NomeCompleto { get; set; }
+    public string NomeCompleto { get; set; } = string.Empty;
     public SexoUsuario Sexo { get; set; }
     public string Email { get; set; } = string.Empty;
-    public required DateTime DataNascimento { get; set; }
+    public DateTime DataNascimento { get; set; }
     public string Nacionalidade { get; set; } = string.Empty;
     public string Naturalidade { get; set; } = string.Empty;
-    public required string Cpf { get; set; }
+    public string Cpf { get; set; } = string.Empty;
 }
+

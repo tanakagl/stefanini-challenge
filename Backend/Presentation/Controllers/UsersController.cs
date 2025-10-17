@@ -10,11 +10,15 @@ public class UsersController(
     CreateUserUseCase createUserUseCase,
     GetAllUsersUseCase getAllUsersUseCase,
     GetUserByNameUseCase getUserByNameUseCase,
+    DeleteUserUseCase deleteUserUseCase,
+    UpdateUserUseCase updateUserUseCase,
     ILogger<UsersController> logger) : ControllerBase
 {
     private readonly CreateUserUseCase _createUserUseCase = createUserUseCase;
     private readonly GetAllUsersUseCase _getAllUsersUseCase = getAllUsersUseCase;
     private readonly GetUserByNameUseCase _getUserByNameUseCase = getUserByNameUseCase;
+    private readonly DeleteUserUseCase _deleteUserUseCase = deleteUserUseCase;
+    private readonly UpdateUserUseCase _updateUserUseCase = updateUserUseCase;
     private readonly ILogger<UsersController> _logger = logger;
 
     [HttpGet]
@@ -70,5 +74,56 @@ public class UsersController(
         }
     }
 
+
+    [HttpPut("{id}")]
+    [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UserUpdateDto dto, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var updatedUser = await _updateUserUseCase.ExecuteAsync(id, dto, cancellationToken);
+            
+            if (updatedUser is null)
+            {
+                return NotFound(new { message = "Usuário não encontrado." });
+            }
+            
+            return Ok(updatedUser);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao atualizar usuário");
+            return StatusCode(500, "Erro interno do servidor");
+        }
+    }
+
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var deleted = await _deleteUserUseCase.ExecuteAsync(id, cancellationToken);
+            
+            if (!deleted)
+            {
+                return NotFound(new { message = "Usuário não encontrado." });
+            }
+            
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao deletar usuário");
+            return StatusCode(500, "Erro interno do servidor");
+        }
+    }
 }
 

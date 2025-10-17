@@ -10,14 +10,13 @@ public class UserCreateDto
     [StringLength(200, MinimumLength = 3, ErrorMessage = "O nome deve ter entre 3 e 200 caracteres.")]
     public string NomeCompleto { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "O sexo é obrigatório.")]
     public SexoUsuario Sexo { get; set; }
 
-    [Required(ErrorMessage = "O email é obrigatório.")]
     [EmailValidation]
     public string Email { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "A data de nascimento é obrigatória.")]
+    [DataNascimentoValidation]
     public DateTime DataNascimento { get; set; }
 
     [Required(ErrorMessage = "A nacionalidade é obrigatória.")]

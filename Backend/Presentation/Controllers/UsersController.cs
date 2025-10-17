@@ -21,7 +21,7 @@ public class UsersController(
     private readonly UpdateUserUseCase _updateUserUseCase = updateUserUseCase;
     private readonly ILogger<UsersController> _logger = logger;
 
-    [HttpGet]
+    [HttpGet(Name = "GetAllUsers")]
     [ProducesResponseType(typeof(IEnumerable<UserResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
@@ -37,7 +37,7 @@ public class UsersController(
         }
     }
 
-    [HttpGet("search")]
+    [HttpGet("search", Name = "GetUsersByName")]
     [ProducesResponseType(typeof(IEnumerable<UserResponseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByName([FromQuery] string nome, CancellationToken cancellationToken)
     {
@@ -53,7 +53,7 @@ public class UsersController(
         }
     }
 
-    [HttpPost]
+    [HttpPost(Name = "CreateUser")]
     [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] UserCreateDto dto, CancellationToken cancellationToken)
@@ -75,7 +75,7 @@ public class UsersController(
     }
 
 
-    [HttpPut("{id}")]
+    [HttpPut("{id}", Name = "UpdateUser")]
     [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -103,7 +103,7 @@ public class UsersController(
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}", Name = "DeleteUser")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)

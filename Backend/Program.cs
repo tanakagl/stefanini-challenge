@@ -1,7 +1,6 @@
 using Backend.Application.UseCases;
 using Backend.Domain.Interfaces;
 using Backend.Infrastructure.Persistence;
-using Backend.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -18,7 +17,7 @@ builder.Services.Scan(scan => scan
         .AsImplementedInterfaces()
         .WithScopedLifetime()
     
-    .AddClasses(classes => classes.Where(type => type.Name.EndsWith("UseCase")))
+    .AddClasses(classes => classes.InNamespaces("Backend.Application.UseCases"))
         .AsSelf()
         .WithScopedLifetime()
 );

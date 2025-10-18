@@ -16,7 +16,33 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        // Configurações de entidades virão aqui
+        // Configuração da entidade User
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            // Address como objeto de valor (owned type)
+            entity.OwnsOne(e => e.Endereco, address =>
+            {
+                address.Property(a => a.Rua).HasMaxLength(200);
+                address.Property(a => a.Numero).HasMaxLength(20);
+                address.Property(a => a.Complemento).HasMaxLength(100);
+                address.Property(a => a.Bairro).HasMaxLength(100);
+                address.Property(a => a.Cidade).HasMaxLength(100);
+                address.Property(a => a.Estado).HasMaxLength(2);
+                address.Property(a => a.Cep).HasMaxLength(8);
+            });
+            
+            entity.Property(e => e.NomeCompleto).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Email).HasMaxLength(254);
+            entity.Property(e => e.Cpf).IsRequired().HasMaxLength(11);
+            entity.Property(e => e.Nacionalidade).HasMaxLength(100);
+            entity.Property(e => e.Naturalidade).HasMaxLength(100);
+            
+            // Índices
+            entity.HasIndex(e => e.Email);
+            entity.HasIndex(e => e.Cpf).IsUnique();
+        });
     }
 
     public override int SaveChanges()

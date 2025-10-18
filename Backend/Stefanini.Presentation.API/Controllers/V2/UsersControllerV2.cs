@@ -1,32 +1,33 @@
-using Stefanini.Application.DTOs;
+using Stefanini.Application.DTOs.V2;
 using Stefanini.Application.UseCases;
+using Stefanini.Application.UseCases.V2;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Asp.Versioning;
 
-namespace Stefanini.Presentation.API.Controllers;
+namespace Stefanini.Presentation.API.Controllers.V2;
 
 [ApiController]
-[ApiVersion("1.0")]
+[ApiVersion("2.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [Authorize]
-public class UsersController(
-    CreateUserUseCase createUserUseCase,
-    GetAllUsersUseCase getAllUsersUseCase,
-    GetUserByNameUseCase getUserByNameUseCase,
+public class UsersControllerV2(
+    CreateUserUseCaseV2 createUserUseCase,
+    GetAllUsersUseCaseV2 getAllUsersUseCase,
+    GetUserByNameUseCaseV2 getUserByNameUseCase,
     DeleteUserUseCase deleteUserUseCase,
-    UpdateUserUseCase updateUserUseCase,
-    ILogger<UsersController> logger) : ControllerBase
+    UpdateUserUseCaseV2 updateUserUseCase,
+    ILogger<UsersControllerV2> logger) : ControllerBase
 {
-    private readonly CreateUserUseCase _createUserUseCase = createUserUseCase;
-    private readonly GetAllUsersUseCase _getAllUsersUseCase = getAllUsersUseCase;
-    private readonly GetUserByNameUseCase _getUserByNameUseCase = getUserByNameUseCase;
+    private readonly CreateUserUseCaseV2 _createUserUseCase = createUserUseCase;
+    private readonly GetAllUsersUseCaseV2 _getAllUsersUseCase = getAllUsersUseCase;
+    private readonly GetUserByNameUseCaseV2 _getUserByNameUseCase = getUserByNameUseCase;
     private readonly DeleteUserUseCase _deleteUserUseCase = deleteUserUseCase;
-    private readonly UpdateUserUseCase _updateUserUseCase = updateUserUseCase;
-    private readonly ILogger<UsersController> _logger = logger;
+    private readonly UpdateUserUseCaseV2 _updateUserUseCase = updateUserUseCase;
+    private readonly ILogger<UsersControllerV2> _logger = logger;
 
-    [HttpGet(Name = "GetAllUsers")]
-    [ProducesResponseType(typeof(IEnumerable<UserResponseDto>), StatusCodes.Status200OK)]
+    [HttpGet(Name = "GetAllUsersV2")]
+    [ProducesResponseType(typeof(IEnumerable<UserResponseDtoV2>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         try
@@ -41,8 +42,8 @@ public class UsersController(
         }
     }
 
-    [HttpGet("search", Name = "GetUsersByName")]
-    [ProducesResponseType(typeof(IEnumerable<UserResponseDto>), StatusCodes.Status200OK)]
+    [HttpGet("search", Name = "GetUsersByNameV2")]
+    [ProducesResponseType(typeof(IEnumerable<UserResponseDtoV2>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByName([FromQuery] string nome, CancellationToken cancellationToken)
     {
         try
@@ -57,16 +58,16 @@ public class UsersController(
         }
     }
 
-    [HttpPost(Name = "CreateUser")]
+    [HttpPost(Name = "CreateUserV2")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(UserResponseDtoV2), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] UserCreateDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] UserCreateDtoV2 dto, CancellationToken cancellationToken)
     {
         try
         {
             var createdUser = await _createUserUseCase.ExecuteAsync(dto, cancellationToken);
-            return CreatedAtAction(nameof(GetAll), new { id = createdUser.Id }, createdUser);
+            return CreatedAtAction(nameof(GetAll), new { id = createdUser.Id, version = "2.0" }, createdUser);
         }
         catch (InvalidOperationException ex)
         {
@@ -79,11 +80,11 @@ public class UsersController(
         }
     }
 
-    [HttpPut("{id}", Name = "UpdateUser")]
-    [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status200OK)]
+    [HttpPut("{id}", Name = "UpdateUserV2")]
+    [ProducesResponseType(typeof(UserResponseDtoV2), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UserUpdateDto dto, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UserUpdateDtoV2 dto, CancellationToken cancellationToken)
     {
         try
         {
@@ -107,7 +108,7 @@ public class UsersController(
         }
     }
 
-    [HttpDelete("{id}", Name = "DeleteUser")]
+    [HttpDelete("{id}", Name = "DeleteUserV2")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)

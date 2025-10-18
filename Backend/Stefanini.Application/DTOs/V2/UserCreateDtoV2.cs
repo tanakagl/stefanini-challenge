@@ -2,9 +2,9 @@ using Stefanini.Application.Validators;
 using Stefanini.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace Stefanini.Application.DTOs;
+namespace Stefanini.Application.DTOs.V2;
 
-public class UserCreateDto
+public class UserCreateDtoV2
 {
     [Required(ErrorMessage = "O nome completo é obrigatório.")]
     [StringLength(200, MinimumLength = 3, ErrorMessage = "O nome deve ter entre 3 e 200 caracteres.")]
@@ -31,6 +31,11 @@ public class UserCreateDto
     [CpfValidation]
     public string Cpf { get; set; } = string.Empty;
 
+    // Endereço obrigatório na v2
+    [Required(ErrorMessage = "O endereço é obrigatório.")]
+    public AddressDto Endereco { get; set; } = new();
+
+    // Senha obrigatória para autenticação
     [Required(ErrorMessage = "A senha é obrigatória.")]
     [StringLength(100, MinimumLength = 6, ErrorMessage = "A senha deve ter entre 6 e 100 caracteres.")]
     public string Password { get; set; } = string.Empty;

@@ -1,14 +1,14 @@
-using Stefanini.Application.DTOs;
+using Stefanini.Application.DTOs.V2;
 using Stefanini.Application.Mappings;
 using Stefanini.Domain.Interfaces;
 
-namespace Stefanini.Application.UseCases;
+namespace Stefanini.Application.UseCases.V2;
 
-public class CreateUserUseCase(IUserRepository userRepository)
+public class CreateUserUseCaseV2(IUserRepository userRepository)
 {
     private readonly IUserRepository _userRepository = userRepository;
 
-    public async Task<UserResponseDto> ExecuteAsync(UserCreateDto dto, CancellationToken cancellationToken = default)
+    public async Task<UserResponseDtoV2> ExecuteAsync(UserCreateDtoV2 dto, CancellationToken cancellationToken = default)
     {
         if (await _userRepository.EmailExistsAsync(dto.Email, cancellationToken))
         {
@@ -21,12 +21,14 @@ public class CreateUserUseCase(IUserRepository userRepository)
         }
 
         var user = dto.ToEntity();
+        
+        // Hash da senha
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
         
         await _userRepository.AddAsync(user, cancellationToken);
         await _userRepository.SaveChangesAsync(cancellationToken);
 
-        return user.ToResponseDto();
+        return user.ToResponseDtoV2();
     }
 }
 

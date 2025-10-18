@@ -5,16 +5,21 @@ namespace Stefanini.Application.Validators;
 
 public class EmailValidationAttribute : ValidationAttribute
 {
+    public EmailValidationAttribute()
+    {
+        ErrorMessage = "Email inválido.";
+    }
+
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
+        if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+        {
+            return new ValidationResult("Email é obrigatório.");
+        }
+
         if (value is not string email)
         {
             return new ValidationResult("Email deve ser uma string.");
-        }
-
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            return ValidationResult.Success;
         }
 
         email = email.Trim().ToLower();
@@ -52,12 +57,6 @@ public class EmailValidationAttribute : ValidationAttribute
         if (!domainPart.Contains('.'))
         {
             return new ValidationResult("Domínio do email inválido (deve conter um ponto).");
-        }
-
-        var invalidDomains = new[] { "test.com", "example.com", "localhost", "test.test" };
-        if (invalidDomains.Contains(domainPart))
-        {
-            return new ValidationResult("Domínio de email não permitido.");
         }
 
         return ValidationResult.Success;

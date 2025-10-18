@@ -4,6 +4,11 @@ namespace Stefanini.Application.Validators;
 
 public class DataNascimentoValidationAttribute : ValidationAttribute
 {
+    public DataNascimentoValidationAttribute()
+    {
+        ErrorMessage = "Data de nascimento inválida.";
+    }
+
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         if (value is not DateTime dataNascimento)

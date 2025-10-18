@@ -4,16 +4,21 @@ namespace Stefanini.Application.Validators;
 
 public class CpfValidationAttribute : ValidationAttribute
 {
+    public CpfValidationAttribute()
+    {
+        ErrorMessage = "CPF inválido.";
+    }
+
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
+        if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+        {
+            return new ValidationResult("CPF é obrigatório.");
+        }
+
         if (value is not string cpf)
         {
             return new ValidationResult("CPF deve ser uma string.");
-        }
-
-        if (string.IsNullOrWhiteSpace(cpf))
-        {
-            return ValidationResult.Success;
         }
 
         cpf = cpf.Replace(".", "").Replace("-", "").Trim();

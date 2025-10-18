@@ -2,18 +2,22 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copy solution and project files
-COPY Stefanini.sln .
+# Copy project files
 COPY Stefanini.Domain/Stefanini.Domain.csproj Stefanini.Domain/
 COPY Stefanini.Application/Stefanini.Application.csproj Stefanini.Application/
 COPY Stefanini.Infrastructure/Stefanini.Infrastructure.csproj Stefanini.Infrastructure/
 COPY Stefanini.Presentation.API/Stefanini.Presentation.API.csproj Stefanini.Presentation.API/
 
-# Restore dependencies
+# Restore dependencies (only for API project and its dependencies)
+WORKDIR /src/Stefanini.Presentation.API
 RUN dotnet restore
 
 # Copy the rest of the code
-COPY . .
+WORKDIR /src
+COPY Stefanini.Domain/ Stefanini.Domain/
+COPY Stefanini.Application/ Stefanini.Application/
+COPY Stefanini.Infrastructure/ Stefanini.Infrastructure/
+COPY Stefanini.Presentation.API/ Stefanini.Presentation.API/
 
 # Build and publish
 WORKDIR /src/Stefanini.Presentation.API

@@ -27,8 +27,8 @@ export function LoginForm() {
 
         try {
             await login(email, password);
-        } catch (err: any) {
-            setError(err.message || "Falha ao fazer login. Verifique suas credenciais.");
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Falha ao fazer login. Verifique suas credenciais.");
         } finally {
             setIsLoading(false);
         }
@@ -71,8 +71,8 @@ export function LoginForm() {
             setDataNascimento("");
             setNacionalidade("Brasileiro");
             setNaturalidade("");
-        } catch (err: any) {
-            setError(err.message || "Falha ao criar conta.");
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Falha ao criar conta.");
         } finally {
             setIsLoading(false);
         }

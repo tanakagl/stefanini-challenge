@@ -36,8 +36,8 @@ export function UserDashboard() {
             await createUser(userData as UserCreateDto);
             showNotification("success", "Usuário criado com sucesso!");
             setModalMode(null);
-        } catch (error: any) {
-            showNotification("error", error.message || "Erro ao criar usuário");
+        } catch (error) {
+            showNotification("error", error instanceof Error ? error.message : "Erro ao criar usuário");
             throw error;
         } finally {
             setIsSubmitting(false);
@@ -52,8 +52,8 @@ export function UserDashboard() {
             showNotification("success", "Usuário atualizado com sucesso!");
             setModalMode(null);
             setSelectedUser(null);
-        } catch (error: any) {
-            showNotification("error", error.message || "Erro ao atualizar usuário");
+        } catch (error) {
+            showNotification("error", error instanceof Error ? error.message : "Erro ao atualizar usuário");
             throw error;
         } finally {
             setIsSubmitting(false);
@@ -67,8 +67,8 @@ export function UserDashboard() {
             await deleteUserFromStore(deleteUser.id);
             showNotification("success", "Usuário excluído com sucesso!");
             setDeleteUser(null);
-        } catch (error: any) {
-            showNotification("error", error.message || "Erro ao excluir usuário");
+        } catch (error) {
+            showNotification("error", error instanceof Error ? error.message : "Erro ao excluir usuário");
         } finally {
             setIsDeleting(false);
         }

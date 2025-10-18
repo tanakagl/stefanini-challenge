@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { UserResponseDto, UserCreateDto, UserUpdateDto, KnownSexoUsuario } from "@/api/src/models";
+import type { UserResponseDto, UserCreateDto, UserUpdateDto } from "@/api/src/models";
 
 interface UserFormProps {
     user?: UserResponseDto | null;
@@ -53,7 +53,7 @@ export function UserForm({ user, onSubmit, onCancel, isLoading }: UserFormProps)
         setErrors([]);
 
         try {
-            const userData: any = {
+            const userData = {
                 nomeCompleto: formData.nomeCompleto,
                 email: formData.email,
                 cpf: formData.cpf,
@@ -61,19 +61,13 @@ export function UserForm({ user, onSubmit, onCancel, isLoading }: UserFormProps)
                 sexo: formData.sexo,
                 nacionalidade: formData.nacionalidade,
                 naturalidade: formData.naturalidade,
+                ...((!user && formData.password) && { password: formData.password }),
             };
 
-            // Add password only for creation
-            if (!user && formData.password) {
-                userData.password = formData.password;
-            }
-
-            await onSubmit(userData);
-        } catch (err: any) {
-            const errorMessages = err.response?.data?.errors
-                ? Object.values(err.response.data.errors).flat()
-                : [err.message || "Erro ao salvar usuário"];
-            setErrors(errorMessages as string[]);
+            await onSubmit(userData as UserCreateDto | UserUpdateDto);
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "Erro ao salvar usuário";
+            setErrors([errorMessage]);
         }
     };
 

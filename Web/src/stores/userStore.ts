@@ -41,9 +41,9 @@ export const useUserStore = create<UserState>((set, get) => ({
       
       const users = await api.getAllUsers(token);
       set({ users, isLoading: false });
-    } catch (error: any) {
+    } catch (error) {
       set({
-        error: error.message || "Erro ao carregar usuários",
+        error: error instanceof Error ? error.message : "Erro ao carregar usuários",
         isLoading: false,
         users: [],
       });
@@ -61,9 +61,9 @@ export const useUserStore = create<UserState>((set, get) => ({
         ? await api.getUsersByName(token, name)
         : await api.getAllUsers(token);
       set({ users, isLoading: false });
-    } catch (error: any) {
+    } catch (error) {
       set({
-        error: error.message || "Erro ao buscar usuários",
+        error: error instanceof Error ? error.message : "Erro ao buscar usuários",
         isLoading: false,
         users: [],
       });
@@ -84,9 +84,9 @@ export const useUserStore = create<UserState>((set, get) => ({
       
       set({ isLoading: false });
       return newUser;
-    } catch (error: any) {
+    } catch (error) {
       set({
-        error: error.message || "Erro ao criar usuário",
+        error: error instanceof Error ? error.message : "Erro ao criar usuário",
         isLoading: false,
       });
       throw error;
@@ -106,9 +106,9 @@ export const useUserStore = create<UserState>((set, get) => ({
       
       set({ isLoading: false });
       return updatedUser;
-    } catch (error: any) {
+    } catch (error) {
       set({
-        error: error.message || "Erro ao atualizar usuário",
+        error: error instanceof Error ? error.message : "Erro ao atualizar usuário",
         isLoading: false,
       });
       throw error;
@@ -127,9 +127,9 @@ export const useUserStore = create<UserState>((set, get) => ({
       await get().fetchUsers();
       
       set({ isLoading: false });
-    } catch (error: any) {
+    } catch (error) {
       set({
-        error: error.message || "Erro ao excluir usuário",
+        error: error instanceof Error ? error.message : "Erro ao excluir usuário",
         isLoading: false,
       });
       throw error;

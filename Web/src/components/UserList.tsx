@@ -11,21 +11,17 @@ interface UserListProps {
 }
 
 export function UserList({ onEdit, onDelete }: UserListProps) {
-    const { users, isLoading, error, searchTerm, setSearchTerm, fetchUsers, searchUsers } = useUserStore();
+    const { users, isLoading, error, fetchUsers, searchUsers } = useUserStore();
     const currentUser = useAuthStore((state) => state.user);
     const [localSearchTerm, setLocalSearchTerm] = useState("");
 
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [fetchUsers]);
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            await searchUsers(localSearchTerm);
-        } catch (err) {
-            // Error is already handled in the store
-        }
+        await searchUsers(localSearchTerm);
     };
 
     const formatDate = (date?: Date) => {

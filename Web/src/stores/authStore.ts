@@ -45,27 +45,14 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response = await api.login(email, password);
           get().setTokens(response);
-        } catch (error: any) {
+        } catch (error) {
           console.error("Login failed:", error);
           
           // Extrair mensagem de erro detalhada
           let errorMessage = "Erro ao fazer login";
           
-          if (error.status === 401) {
-            errorMessage = "Email ou senha inválidos";
-          } else if (error.body) {
-            // Tentar extrair mensagem do erro da API
-            if (typeof error.body === 'string') {
-              errorMessage = error.body;
-            } else if (error.body.message) {
-              errorMessage = error.body.message;
-            } else if (error.body.title) {
-              errorMessage = error.body.title;
-            } else if (error.body.errors) {
-              // Erros de validação
-              const validationErrors = Object.values(error.body.errors).flat();
-              errorMessage = validationErrors.join(", ");
-            }
+          if (error instanceof Error) {
+            errorMessage = error.message;
           }
           
           throw new Error(errorMessage);

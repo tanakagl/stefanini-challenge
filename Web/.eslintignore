@@ -1,0 +1,4 @@
+src/api/src/**
+.next/**
+node_modules/**
+

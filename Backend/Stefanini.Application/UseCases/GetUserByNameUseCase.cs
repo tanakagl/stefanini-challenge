@@ -12,7 +12,7 @@ public class GetUserByNameUseCase(IUserRepository userRepository)
     {
         if (string.IsNullOrWhiteSpace(nome))
         {
-            return [];
+            return Enumerable.Empty<UserResponseDto>();
         }
 
         var nomeLower = nome.ToLower();

@@ -148,7 +148,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+// Don't use HTTPS redirection in containers - Railway handles SSL externally
+// app.UseHttpsRedirection();
 
 // Ativar CORS
 app.UseCors("AllowFrontend");
@@ -157,6 +158,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Health check endpoint for Railway/container orchestration
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 app.Run();
 

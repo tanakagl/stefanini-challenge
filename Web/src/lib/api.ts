@@ -51,7 +51,26 @@ async function fetchApi<T>(
     );
   }
 
-  return response.json();
+  // Check if response has content before parsing JSON
+  const contentLength = response.headers.get("content-length");
+  const contentType = response.headers.get("content-type");
+  
+  // If no content or content-length is 0, return empty object
+  if (
+    response.status === 204 || 
+    contentLength === "0" || 
+    !contentType?.includes("application/json")
+  ) {
+    return {} as T;
+  }
+
+  // Try to parse JSON, return empty object if it fails
+  const text = await response.text();
+  if (!text) {
+    return {} as T;
+  }
+  
+  return JSON.parse(text);
 }
 
 export const api = {
@@ -76,6 +95,13 @@ export const api = {
   getUsersByName: (token: string, nome: string): Promise<UserResponseDto[]> =>
     fetchApi(endpoints.users.search(nome), {
       headers: { Authorization: `Bearer ${token}` },
+    }),
+
+  // Register new user (no auth required - uses the same endpoint as createUser)
+  register: (user: UserCreateDto): Promise<UserResponseDto> =>
+    fetchApi(endpoints.users.create, {
+      method: "POST",
+      body: JSON.stringify(user),
     }),
 
   createUser: (token: string, user: UserCreateDto): Promise<UserResponseDto> =>

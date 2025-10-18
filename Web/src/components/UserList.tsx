@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/stores/userStore";
+import { useAuthStore } from "@/stores/authStore";
 import type { UserResponseDto } from "@/api/src/models";
 
 interface UserListProps {
@@ -11,6 +12,7 @@ interface UserListProps {
 
 export function UserList({ onEdit, onDelete }: UserListProps) {
     const { users, isLoading, error, searchTerm, setSearchTerm, fetchUsers, searchUsers } = useUserStore();
+    const currentUser = useAuthStore((state) => state.user);
     const [localSearchTerm, setLocalSearchTerm] = useState("");
 
     useEffect(() => {
@@ -130,60 +132,70 @@ export function UserList({ onEdit, onDelete }: UserListProps) {
                                 </td>
                             </tr>
                         ) : (
-                            users.map((user) => (
-                                <tr key={user.id} className="hover">
-                                    <td className="font-medium">{user.nomeCompleto}</td>
-                                    <td>{user.email}</td>
-                                    <td>{formatCpf(user.cpf)}</td>
-                                    <td>{formatDate(user.dataNascimento)}</td>
-                                    <td>{user.sexo}</td>
-                                    <td>{user.nacionalidade}</td>
-                                    <td className="text-right">
-                                        <div className="flex gap-2 justify-end">
-                                            <button
-                                                className="btn btn-sm btn-ghost"
-                                                onClick={() => onEdit(user)}
-                                                title="Editar"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="h-4 w-4"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
+                            users.map((user) => {
+                                const isCurrentUser = user.id === currentUser?.id;
+                                return (
+                                    <tr key={user.id} className={isCurrentUser ? "hover bg-primary/10" : "hover"}>
+                                        <td className="font-medium">
+                                            {user.nomeCompleto}
+                                            {isCurrentUser && (
+                                                <span className="ml-2 badge badge-primary badge-sm">Você</span>
+                                            )}
+                                        </td>
+                                        <td>{user.email}</td>
+                                        <td>{formatCpf(user.cpf)}</td>
+                                        <td>{formatDate(user.dataNascimento)}</td>
+                                        <td>{user.sexo}</td>
+                                        <td>{user.nacionalidade}</td>
+                                        <td className="text-right">
+                                            <div className="flex gap-2 justify-end">
+                                                <button
+                                                    className="btn btn-sm btn-ghost"
+                                                    onClick={() => onEdit(user)}
+                                                    title="Editar"
+                                                    disabled={isCurrentUser}
                                                 >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                                    />
-                                                </svg>
-                                            </button>
-                                            <button
-                                                className="btn btn-sm btn-ghost text-error"
-                                                onClick={() => onDelete(user)}
-                                                title="Excluir"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="h-4 w-4"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-4 w-4"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                                        />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    className="btn btn-sm btn-ghost text-error"
+                                                    onClick={() => onDelete(user)}
+                                                    title={isCurrentUser ? "Não é possível excluir seu próprio usuário" : "Excluir"}
+                                                    disabled={isCurrentUser}
                                                 >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-4 w-4"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                        />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })
                         )}
                     </tbody>
                 </table>
